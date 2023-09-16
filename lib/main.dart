@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import './homepage.dart';
+import 'homepage.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Word Pair',
-      home: HomePage(),
+      home: const HomePage(),
       theme: ThemeData(primarySwatch: Colors.purple),
     );
   }

@@ -2,39 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final wordPairs = <WordPair>[];
+  final _randomWordPairs = <WordPair>[];
 
-  final savedWords = <WordPair>{};
+  final _savedWordPairs = <WordPair>{};
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Word Pairs'),
+        title: const Text(
+          'Word Pairs',
+        ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              _pushSaved();
+            },
+            icon: const Icon(Icons.list),
+          )
+        ],
       ),
       body: ListView.builder(
           padding: const EdgeInsets.all(16.0),
           itemBuilder: (context, item) {
             if (item.isOdd) return const Divider();
             final index = item ~/ 2;
-            if (index >= wordPairs.length) {
-              wordPairs.addAll(generateWordPairs().take(10));
+            if (index >= _randomWordPairs.length) {
+              _randomWordPairs.addAll(generateWordPairs().take(10));
             }
-            return _buildRow(wordPairs[index]);
+            return _buildRow(_randomWordPairs[index]);
           }),
     );
   }
 
   Widget _buildRow(WordPair pair) {
-    final alreadySaved = savedWords.contains(pair);
+    final alreadySaved = _savedWordPairs.contains(pair);
     return ListTile(
       title: Text(pair.asPascalCase, style: const TextStyle(fontSize: 18.0)),
       trailing: Icon(
@@ -44,12 +54,39 @@ class _HomePageState extends State<HomePage> {
       onTap: () {
         setState(() {
           if (alreadySaved) {
-            savedWords.remove(pair);
+            _savedWordPairs.remove(pair);
           } else {
-            savedWords.add(pair);
+            _savedWordPairs.add(pair);
           }
         });
       },
+    );
+  }
+
+  void _pushSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          final Iterable<ListTile> tiles = _savedWordPairs.map(
+            (WordPair pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: const TextStyle(fontSize: 18.0),
+                ),
+              );
+            },
+          );
+          final divided =
+              ListTile.divideTiles(context: context, tiles: tiles).toList();
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Favourites'),
+            ),
+            body: ListView(children: divided),
+          );
+        },
+      ),
     );
   }
 }
